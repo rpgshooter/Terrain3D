@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://chol2xlfbq7cu"]
+[gd_scene load_steps=24 format=3 uid="uid://chol2xlfbq7cu"]
 
 [ext_resource type="Script" uid="uid://chstoagn42gbr" path="res://demo/src/DemoScene.gd" id="1_k7qca"]
 [ext_resource type="PackedScene" uid="uid://d2jihfohphuue" path="res://demo/components/UI.tscn" id="2_nqak5"]
@@ -6,8 +6,13 @@
 [ext_resource type="PackedScene" uid="uid://domhm87hbhbg1" path="res://demo/components/Player.tscn" id="3_ht63y"]
 [ext_resource type="PackedScene" uid="uid://djhl3foqkj4e2" path="res://demo/components/Tunnel.tscn" id="3_kdh0b"]
 [ext_resource type="PackedScene" uid="uid://bb2lp50sjndus" path="res://demo/components/Environment.tscn" id="3_yqldq"]
+[ext_resource type="PackedScene" uid="uid://bn5nf4esciwex" path="res://demo/assets/models/LOD5Example.tscn" id="7_23r1o"]
+[ext_resource type="Texture2D" uid="uid://c88j3oj0lf6om" path="res://demo/assets/textures/rock023_alb_ht.png" id="8_8f3ef"]
 [ext_resource type="PackedScene" uid="uid://d3sr0a7dxfkr8" path="res://addons/terrain_3d/extras/particle_example/Terrain3DParticles.tscn" id="8_fwrtk"]
-[ext_resource type="Terrain3DAssets" uid="uid://dal3jhw6241qg" path="res://demo/data/assets.tres" id="8_g2of2"]
+[ext_resource type="Script" uid="uid://blv8ldcuaedru" path="res://demo/node_3d.gd" id="9_egbwy"]
+[ext_resource type="Texture2D" uid="uid://dabyathlpy04p" path="res://demo/assets/textures/rock023_nrm_rgh.png" id="9_nk7oj"]
+[ext_resource type="Texture2D" uid="uid://ddprscrpsofah" path="res://demo/assets/textures/ground037_alb_ht.png" id="10_88s2h"]
+[ext_resource type="Texture2D" uid="uid://g80pbqtklcws" path="res://demo/assets/textures/ground037_nrm_rgh.png" id="11_a7o2t"]
 
 [sub_resource type="Gradient" id="Gradient_vr1m7"]
 offsets = PackedFloat32Array(0.2, 1)
@@ -79,6 +84,62 @@ auto_shader_enabled = true
 dual_scaling_enabled = true
 displacement_sharpness = 0.25
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b2vqk"]
+transparency = 4
+cull_mode = 2
+vertex_color_use_as_albedo = true
+backlight_enabled = true
+backlight = Color(0.5, 0.5, 0.5, 1)
+distance_fade_mode = 1
+distance_fade_min_distance = 128.0
+distance_fade_max_distance = 96.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_2qf8x"]
+name = "TextureCard"
+generated_type = 1
+height_offset = 0.5
+density = 10.0
+material_override = SubResource("StandardMaterial3D_b2vqk")
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 128.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_y3ibi"]
+name = "LODExample"
+id = 1
+scene_file = ExtResource("7_23r1o")
+height_offset = 0.5
+density = 10.0
+last_lod = 4
+last_shadow_lod = 4
+lod4_range = 256.0
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_lha57"]
+name = "Cliff"
+albedo_texture = ExtResource("8_8f3ef")
+normal_texture = ExtResource("9_nk7oj")
+normal_depth = 1.5
+ao_strength = 1.0
+ao_light_affect = 0.8
+roughness = -0.05
+displacement_scale = 0.65
+vertical_projection = true
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_od0q7"]
+name = "Grass"
+id = 1
+albedo_color = Color(0.67451, 0.74902, 0.686275, 1)
+albedo_texture = ExtResource("10_88s2h")
+normal_texture = ExtResource("11_a7o2t")
+normal_depth = 1.4
+ao_strength = 1.0
+displacement_scale = 0.2
+detiling_rotation = 0.161
+
+[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_jl7my"]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_2qf8x"), SubResource("Terrain3DMeshAsset_y3ibi")])
+texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_lha57"), SubResource("Terrain3DTextureAsset_od0q7")])
+
 [node name="Demo" type="Node"]
 script = ExtResource("1_k7qca")
 
@@ -98,7 +159,7 @@ transform = Transform3D(0.176947, 0, -0.98422, 0, 1, 0, 0.98422, 0, 0.176947, 22
 [node name="Terrain3D" type="Terrain3D" parent="." node_paths=PackedStringArray("collision_target", "clipmap_target")]
 data_directory = "res://demo/data"
 material = SubResource("Terrain3DMaterial_jrc01")
-assets = ExtResource("8_g2of2")
+assets = SubResource("Terrain3DAssets_jl7my")
 collision_target = NodePath("../Player")
 collision_mask = 3
 clipmap_target = NodePath("../Player")
@@ -109,3 +170,6 @@ metadata/_edit_lock_ = true
 
 [node name="Terrain3DParticles" parent="Terrain3D" node_paths=PackedStringArray("terrain") instance=ExtResource("8_fwrtk")]
 terrain = NodePath("..")
+
+[node name="Node3D" type="Node3D" parent="."]
+script = ExtResource("9_egbwy")
